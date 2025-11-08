@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fes.unam.aragon.metodosorden.controlador.Controlador">
+   <children>
+      <ChoiceBox fx:id="bxSelector" layoutX="146.0" layoutY="117.0" prefHeight="35.0" prefWidth="175.0" />
+      <Text layoutX="233.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Métodos de ordenamiento">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Text>
+      <Button fx:id="btnLista" layoutX="443.0" layoutY="117.0" mnemonicParsing="false" onAction="#btnLista" prefHeight="35.0" prefWidth="114.0" text="Nuevos datos" />
+      <Button fx:id="btnOrdenar" layoutX="682.0" layoutY="117.0" mnemonicParsing="false" onAction="#btnOrdenar" prefHeight="35.0" prefWidth="156.0" text="Iniciar ordenamiento" />
+      <BarChart fx:id="chGrafica" layoutX="58.0" layoutY="182.0" prefHeight="567.0" prefWidth="878.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+   </children>
+</Pane>
