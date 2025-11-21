@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 public class Controlador implements Initializable {
     ListaSimple<Integer> listaSimple=new ListaSimple<>();
     int tiempoRetardo= 40;
-    int numeroDatos=40;
+    int numeroDatos=10;
     XYChart.Data<String, Number> primero =null;
     XYChart.Data<String, Number> segundo =null;
 
@@ -109,6 +109,12 @@ public class Controlador implements Initializable {
             case "Insercion":
                 break;
             case "Sacudida":
+                XYChart.Series<String, Number> series1=chGrafica.getData().get(0);
+                Task<Void> taskSac =sacudidaTask(series1);
+
+                Thread ts =new Thread(taskSac);
+                ts.setDaemon(true);
+                ts.start();
                 break;
             case "Quicksort":
                 break;
@@ -165,6 +171,82 @@ public class Controlador implements Initializable {
                         });
                         Thread.sleep((tiempoRetardo));
                     }
+                }
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
+    }
+
+
+
+    private Task<Void> sacudidaTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                int izq= 0;
+                int der= numeroDatos-1;
+                boolean intercambio=true;
+                while (intercambio){
+                    intercambio=false;
+                    //r-l  <-
+                    for (int i=der;i>izq;i--){
+                        primero=data.get(i);
+                        segundo=data.get(i-1);
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("-fx-bar-fill: red;");
+                            segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                        });
+                        Thread.sleep(tiempoRetardo);
+                        double va=primero.getYValue().doubleValue();
+                        double vb=segundo.getYValue().doubleValue();
+                        if (vb>va){
+                            Platform.runLater(()->{
+                                Number tmp=primero.getYValue();
+                                primero.setYValue(segundo.getYValue());
+                                segundo.setYValue(tmp);
+                            });
+                            intercambio=true;
+                        }
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("");
+                            segundo.getNode().setStyle("");
+                        });
+                        Thread.sleep(tiempoRetardo);
+                    }
+                    izq++;
+                    if (!intercambio){break;}
+                    intercambio=false;
+                    //L-R  -->
+                    for (int i = izq; i <der; i++) {
+                        primero=data.get(i);
+                        segundo=data.get(i+1);
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("-fx-bar-fill: red;");
+                            segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                        });
+                        Thread.sleep(tiempoRetardo);
+                        double va=primero.getYValue().doubleValue();
+                        double vb=segundo.getYValue().doubleValue();
+                        if (va>vb){
+                            Platform.runLater(()->{
+                                Number tmp=primero.getYValue();
+                                primero.setYValue(segundo.getYValue());
+                                segundo.setYValue(tmp);
+                            });
+                            intercambio=true;
+                        }
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("");
+                            segundo.getNode().setStyle("");
+                        });
+                        Thread.sleep(tiempoRetardo);
+                    }
+                    der--;
                 }
                 Platform.runLater(()->{
                     btnLista.setDisable(false);
