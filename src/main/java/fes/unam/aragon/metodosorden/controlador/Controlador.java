@@ -128,9 +128,9 @@ public class Controlador implements Initializable {
     private XYChart.Series<String, Number>generarAleatorios(int n){
         XYChart.Series<String, Number> series=new XYChart.Series<>();
         Random rnd=new Random();
-        for (int i = 1; i <n ; i++) {
+        for (int i = 1; i <=n ; i++) {
             int al=rnd.nextInt(50);
-            series.getData().add(new XYChart.Data<>(String.valueOf(al),al));
+            series.getData().add(new XYChart.Data<>(String.valueOf(i),al));
         }
         return series;
     }
@@ -139,7 +139,7 @@ public class Controlador implements Initializable {
             @Override
             protected Void call() throws Exception {
                 ObservableList<XYChart.Data<String, Number>> data = series.getData();
-                for (int i = data.size()-1 ; i >=0 ; i--) {
+                for (int i = data.size()-1 ; i >0 ; i--) {
                     for (int j = 0; j < i; j++) {
                         primero= data.get(j);
                         segundo= data.get(j+1);
