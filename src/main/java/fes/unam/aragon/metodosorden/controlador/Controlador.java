@@ -1,5 +1,9 @@
 package fes.unam.aragon.metodosorden.controlador;
 
+import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +24,9 @@ public class Controlador implements Initializable {
     ListaSimple<Integer> listaSimple=new ListaSimple<>();
     int tiempoRetardo= 40;
     int numeroDatos=40;
+    XYChart.Data<String, Number> primero =null;
+    XYChart.Data<String, Number> segundo =null;
+
 
     @FXML
     private Button btnLista;
@@ -61,6 +68,8 @@ public class Controlador implements Initializable {
 
     @FXML
     void btnOrdenar(ActionEvent event) {
+        btnOrdenar.setDisable(true);
+        btnLista.setDisable(true);
         String selecciono = bxSelector.getValue();
         ordenarDatos(selecciono);
 
@@ -90,10 +99,12 @@ public class Controlador implements Initializable {
     private void ordenarDatos(String metodo){
         switch (metodo){
             case "Burbuja":
-                Burbuja<Integer> burbuja=new Burbuja(listaSimple);
-                burbuja.ordenarAscendente();
-                listaSimple=burbuja.getLista();
-                listaSimple.imprimirLista();
+                XYChart.Series<String, Number> series=chGrafica.getData().get(0);
+                Task<Void> task =burbujaTask(series);
+
+                Thread t =new Thread(task);
+                t.setDaemon(true);
+                t.start();
                 break;
             case "Insercion":
                 break;
@@ -122,5 +133,45 @@ public class Controlador implements Initializable {
             series.getData().add(new XYChart.Data<>(String.valueOf(al),al));
         }
         return series;
+    }
+    private Task<Void> burbujaTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                for (int i = data.size()-1 ; i >=0 ; i--) {
+                    for (int j = 0; j < i; j++) {
+                        primero= data.get(j);
+                        segundo= data.get(j+1);
+
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("-fx-bar-fill: red;");
+                            segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                        });
+                        Thread.sleep(tiempoRetardo);
+
+                        double va=primero.getYValue().doubleValue();
+                        double vb=segundo.getYValue().doubleValue();
+                        if (va>vb){
+                            Platform.runLater(()->{
+                                Number tmp=primero.getYValue();
+                                primero.setYValue(segundo.getYValue());
+                                segundo.setYValue(tmp);
+                            });
+                        }
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("");
+                            segundo.getNode().setStyle("");
+                        });
+                        Thread.sleep((tiempoRetardo));
+                    }
+                }
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
     }
 }
