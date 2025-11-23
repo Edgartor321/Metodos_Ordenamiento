@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 public class Controlador implements Initializable {
     ListaSimple<Integer> listaSimple=new ListaSimple<>();
     int tiempoRetardo= 40;
-    int numeroDatos=10;
+    int numeroDatos=20;
     XYChart.Data<String, Number> primero =null;
     XYChart.Data<String, Number> segundo =null;
 
@@ -76,26 +76,6 @@ public class Controlador implements Initializable {
     }
 
 
-//    private void mostrarDatosEnGrafica(){
-//        chGrafica.getData().clear();
-//        XYChart.Series<String, Number> series = new XYChart.Series<>();
-//
-//        for (int i = 0; i < listaSimple.getLongitud(); i++) {
-//            String nombre = ""+listaSimple.obtenerNodo(i);
-//            Number valor = listaSimple.obtenerNodo(i);
-//            series.getData().add(new XYChart.Data<>(nombre, valor));
-//        }
-//        chGrafica.getData().add(series);
-//    }
-//    private void aleatorios(){
-//        Random random = new Random();
-//        listaSimple.vaciarLista();
-//        for (int i = 0; i < numeroDatos; i++) {
-//            Integer num = random.nextInt(100);
-//            listaSimple.agregarEnCola(num);
-//        }
-//        listaSimple.imprimirLista();
-//    }
     private void ordenarDatos(String metodo){
         switch (metodo){
             case "Burbuja":
@@ -107,14 +87,20 @@ public class Controlador implements Initializable {
                 t.start();
                 break;
             case "Insercion":
+                XYChart.Series<String, Number> series2=chGrafica.getData().get(0);
+                Task<Void> taskIns =insercionTask(series2);
+
+                Thread ts =new Thread(taskIns);
+                ts.setDaemon(true);
+                ts.start();
                 break;
             case "Sacudida":
                 XYChart.Series<String, Number> series1=chGrafica.getData().get(0);
                 Task<Void> taskSac =sacudidaTask(series1);
 
-                Thread ts =new Thread(taskSac);
-                ts.setDaemon(true);
-                ts.start();
+                Thread ti =new Thread(taskSac);
+                ti.setDaemon(true);
+                ti.start();
                 break;
             case "Quicksort":
                 break;
@@ -247,6 +233,61 @@ public class Controlador implements Initializable {
                         Thread.sleep(tiempoRetardo);
                     }
                     der--;
+                }
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
+    }
+
+
+
+    private Task<Void> insercionTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                int conta=0;
+                boolean noHayIntercambio;
+                int comparaciones=0;
+                for (int pasada = 1 ; pasada<data.size() ; pasada++) {
+                    conta=pasada;
+                    noHayIntercambio=true;
+
+                    while (conta>= 0 && conta<=pasada){
+                        comparaciones++;
+                        primero= data.get(pasada);
+                        segundo= data.get(pasada-1);
+
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("-fx-bar-fill: red;");
+                            segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                        });
+                        Thread.sleep(tiempoRetardo);
+
+                        double va=primero.getYValue().doubleValue();
+                        double vb=segundo.getYValue().doubleValue();
+                        if (va<=vb){
+                            Platform.runLater(()->{
+                                Number tmp=primero.getYValue();
+                                primero.setYValue(segundo.getYValue());
+                                segundo.setYValue(tmp);
+                            });
+                        }
+                        else {
+                            noHayIntercambio=false;
+                        }
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("");
+                            segundo.getNode().setStyle("");
+                        });
+                        Thread.sleep((tiempoRetardo));
+                        conta--;
+                    }
+
                 }
                 Platform.runLater(()->{
                     btnLista.setDisable(false);
