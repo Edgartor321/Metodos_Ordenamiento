@@ -250,17 +250,16 @@ public class Controlador implements Initializable {
             @Override
             protected Void call() throws Exception {
                 ObservableList<XYChart.Data<String, Number>> data = series.getData();
-                int conta=0;
                 boolean noHayIntercambio;
                 int comparaciones=0;
                 for (int pasada = 1 ; pasada<data.size() ; pasada++) {
-                    conta=pasada;
+                     int j=pasada;
                     noHayIntercambio=true;
 
-                    while (conta>= 0 && conta<=pasada){
+                    while ( j>0){
                         comparaciones++;
-                        primero= data.get(pasada);
-                        segundo= data.get(pasada-1);
+                        primero= data.get(j);
+                        segundo= data.get(j-1);
 
                         Platform.runLater(()->{
                             primero.getNode().setStyle("-fx-bar-fill: red;");
@@ -276,16 +275,20 @@ public class Controlador implements Initializable {
                                 primero.setYValue(segundo.getYValue());
                                 segundo.setYValue(tmp);
                             });
+                            Thread.sleep(tiempoRetardo);
                         }
                         else {
-                            noHayIntercambio=false;
+                            Platform.runLater(()->{
+                                primero.getNode().setStyle("");
+                                segundo.getNode().setStyle("");
+                            });
+                            break;
                         }
                         Platform.runLater(()->{
                             primero.getNode().setStyle("");
                             segundo.getNode().setStyle("");
                         });
-                        Thread.sleep((tiempoRetardo));
-                        conta--;
+                        j--;
                     }
 
                 }
