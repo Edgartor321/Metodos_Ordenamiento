@@ -21,9 +21,8 @@ import java.util.ResourceBundle;
 
 
 public class Controlador implements Initializable {
-    ListaSimple<Integer> listaSimple=new ListaSimple<>();
     int tiempoRetardo= 40;
-    int numeroDatos=20;
+    int numeroDatos=30;
     XYChart.Data<String, Number> primero =null;
     XYChart.Data<String, Number> segundo =null;
 
@@ -41,8 +40,10 @@ public class Controlador implements Initializable {
     @FXML
     private BarChart<String, Number> chGrafica;
 
+    //Esto sirve para el selector en el menu, más adelante.
     private String[] opciones={"Burbuja","Sacudida","Seleccion","Insercion","Quicksort"};
 
+    //Todo lo que este dentro de aquí se va a inicializar por defecto (el desplegable y los primeros datos aleatorios, para evitar errores)
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         bxSelector.getItems().addAll(opciones);
@@ -55,6 +56,7 @@ public class Controlador implements Initializable {
     }
 
 
+    //Genera nuevos datos aleatorios y los coloca en la gráfica de barras.
     @FXML
     void btnLista(ActionEvent event) {
         //System.out.println(generarAleatorios(40));
@@ -66,6 +68,7 @@ public class Controlador implements Initializable {
 
     }
 
+    //Aquí se da la instrucción para iiciaizar el metodo seleccionado, se llama a la función ordenarDatos y con el desplegable y el SwCs se define que metodo se utiliza.
     @FXML
     void btnOrdenar(ActionEvent event) {
         btnOrdenar.setDisable(true);
@@ -75,7 +78,7 @@ public class Controlador implements Initializable {
 
     }
 
-
+//Metodo que cintiene el SwCs que obtiene la información de la grafica impresa, inicializa la tarea, el hilo y el demonio
     private void ordenarDatos(String metodo){
         switch (metodo){
             case "Burbuja":
@@ -128,7 +131,7 @@ public class Controlador implements Initializable {
         alerta.setContentText(mensaje+"\nRevise bien los datos ingresados");
         alerta.showAndWait();
     }
-
+//Genra valores aleatorios que se colocan en la gráfica de barras.
     private XYChart.Series<String, Number>generarAleatorios(int n){
         XYChart.Series<String, Number> series=new XYChart.Series<>();
         Random rnd=new Random();
@@ -138,6 +141,12 @@ public class Controlador implements Initializable {
         }
         return series;
     }
+
+    //Aquí vienen las cosas insanas, los metodos dentro de los tasks.
+    /*Método burbuja:
+    * Va de forma ascendente
+    * Rojo: elemento que se desplaza (más grande sin ordenar)
+    * */
     private Task<Void> burbujaTask(XYChart.Series<String, Number>series){
         return new Task<Void>() {
             @Override
@@ -180,7 +189,10 @@ public class Controlador implements Initializable {
     }
 
 
-
+    /*Método sacudida (shaker):
+     * Va de forma bidireccional, empieza de der a izq, despues en la otra direccion, a la der se ponen los elementos más grandes.
+     * Rojo: elemento que se desplaza (más grande o más pequenio sin ordenar)
+     * */
     private Task<Void> sacudidaTask(XYChart.Series<String, Number>series){
         return new Task<Void>() {
             @Override
@@ -256,7 +268,12 @@ public class Controlador implements Initializable {
     }
 
 
-
+    /*Método insercion (insertion):
+     * Del lado izquieerdo se aglutinan los valores ya ordenados y a la derecha se toman los valores y se INSERTAN en la posición donde van.
+     * Rojo: elementos ordenados
+     * Naranja: Elementos sin ordenar
+     * Amarillo: Elemento que se inserta
+     * */
     private Task<Void> insercionTask(XYChart.Series<String, Number>series){
         return new Task<Void>() {
             @Override
@@ -313,6 +330,12 @@ public class Controlador implements Initializable {
         };
     }
 
+    /*Método seleccion:
+     * Almacena valores ya ordenads a la izquierda, busca en el conjunto desordenado el valor mśs pequenio y lo coloca en la ultima poscion ordenada+1
+     * Rojo: Comparaciones no aceptadas
+     * Naranja: Comparaciones aceptadas
+     * Verde: Elementos ordenados
+     * */
     private Task<Void> seleccionTask(XYChart.Series<String, Number>series){
         return new Task<Void>() {
             @Override
@@ -365,7 +388,14 @@ public class Controlador implements Initializable {
         };
     }
 
-
+    /*Método Quicksort (recursivo):
+     * Aqui ponemos tres metodos diferentes, el que inicializa el ordenamiento, el metddo que hace las llamadas recursivas y el que hace las particiones y los intercambios, admenas contiene los cambios de color
+     * Aqui busquen la explicación, no sé cómo hacerla, SUERTE
+     * Rojo: Elemento comparado
+     * Azul: Pivotes
+     * Naranja: Elementos que se comparan
+     * Verde: Elementos ordenados
+     * */
     private Task<Void> quicksortTask(XYChart.Series<String, Number>series){
         return new Task<Void>() {
             @Override
