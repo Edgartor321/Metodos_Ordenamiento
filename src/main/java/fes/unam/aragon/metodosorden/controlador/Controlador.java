@@ -380,7 +380,7 @@ public class Controlador implements Initializable {
             }
         };
     }
-    private void quicksortRec(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin){
+    private void quicksortRec(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin) throws InterruptedException {
         if(inicio < fin){
             int indicePiv=particion(datos, inicio,fin);
             quicksortRec(datos,inicio,indicePiv-1);
@@ -388,23 +388,33 @@ public class Controlador implements Initializable {
         }
     }
 
-    private int particion(ObservableList<XYChart.Data<String, Number>> data, int inicio, int fin){
+    private int particion(ObservableList<XYChart.Data<String, Number>> data, int inicio, int fin) throws InterruptedException {
         XYChart.Data<String,Number> piv= data.get(fin);
+
+        Platform.runLater(()-> piv.getNode().setStyle("-fx-bar-fill: blue;"));
+        Thread.sleep(tiempoRetardo);
 
         int i=inicio-1;
         for (int j = inicio; j < fin; j++) {
             XYChart.Data<String,Number> valAct= data.get(j);
+            Platform.runLater(() -> valAct.getNode().setStyle("-fx-bar-fill: red;"));
+            Thread.sleep(tiempoRetardo);
+
             double actualValue=valAct.getYValue().doubleValue();
             double pivValue=piv.getYValue().doubleValue();
             if(actualValue<=pivValue){
                 i++;
                 XYChart.Data<String,Number> menor= data.get(i);
                 Platform.runLater(() -> {
+                    menor.getNode().setStyle("-fx-bar-fill: orange;");
+                });
+                Thread.sleep(tiempoRetardo);
+
+                Platform.runLater(() -> {
                     Number tmp = menor.getYValue();
                     menor.setYValue(valAct.getYValue());
                     valAct.setYValue(tmp);
                 });
-
             }
         }
 
