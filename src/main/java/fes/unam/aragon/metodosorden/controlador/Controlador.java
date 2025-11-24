@@ -329,12 +329,12 @@ public class Controlador implements Initializable {
                         double vb=segundo.getYValue().doubleValue();
                         if (va<vb){
                             min=in;
-                            Platform.runLater(()->{
-                                primero.getNode().setStyle("");
-                                segundo.getNode().setStyle("");
-                            });
                         }
-                        Thread.sleep((tiempoRetardo));
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("");
+                            segundo.getNode().setStyle("");
+                        });
+                        //Thread.sleep((tiempoRetardo));
                     }
                     int finalOut = out;
                     int finalMin = min;
@@ -345,11 +345,10 @@ public class Controlador implements Initializable {
                         Number tmp=salida.getYValue();
                         salida.setYValue(minimo.getYValue());
                         minimo.setYValue(tmp);
+
+                        salida.getNode().setStyle("-fx-bar-fill: green;");
                     });
-                    Platform.runLater(()->{
-                        primero.getNode().setStyle("");
-                        segundo.getNode().setStyle("");
-                    });
+                    Thread.sleep(tiempoRetardo);
                 }
                 Platform.runLater(()->{
                     btnLista.setDisable(false);
