@@ -105,6 +105,12 @@ public class Controlador implements Initializable {
             case "Quicksort":
                 break;
             case "Seleccion":
+                XYChart.Series<String, Number> series3=chGrafica.getData().get(0);
+                Task<Void> taskSel =seleccionTask(series3);
+
+                Thread tse =new Thread(taskSel);
+                tse.setDaemon(true);
+                tse.start();
                 break;
             default:
                 mostrarError("Debes seleccionar un metodo de ordnamiento");
@@ -291,6 +297,62 @@ public class Controlador implements Initializable {
                         j--;
                     }
 
+                }
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
+    }
+
+    private Task<Void> seleccionTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                int out, in, min;
+                for (out = 0 ; out < data.size()-1 ; out++) {
+                    min=out;
+                    for (in = out+1; in < data.size(); in++) {
+                        primero= data.get(in);
+                        segundo= data.get(min);
+
+                        Platform.runLater(()->{
+                            primero.getNode().setStyle("-fx-bar-fill: red;");
+                            segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                        });
+                        Thread.sleep(tiempoRetardo);
+
+                        double va=primero.getYValue().doubleValue();
+                        double vb=segundo.getYValue().doubleValue();
+                        if (va<vb){
+                            min=in;
+                            Platform.runLater(()->{
+                                primero.getNode().setStyle("");
+                                segundo.getNode().setStyle("");
+                            });
+                        }
+                        Thread.sleep((tiempoRetardo));
+                    }
+                    int finalOut = out;
+                    int finalMin = min;
+                    Platform.runLater(()->{
+                        XYChart.Data<String, Number> salida =null;
+                        XYChart.Data<String, Number> minimo =null;
+
+                        salida=data.get(finalOut);
+                        minimo=data.get(finalMin);
+
+                        Number tmp=salida.getYValue();
+                        primero.setYValue(segundo.getYValue());
+                        segundo.setYValue(tmp);
+                    });
+                    Platform.runLater(()->{
+                        primero.getNode().setStyle("");
+                        segundo.getNode().setStyle("");
+                    });
                 }
                 Platform.runLater(()->{
                     btnLista.setDisable(false);
