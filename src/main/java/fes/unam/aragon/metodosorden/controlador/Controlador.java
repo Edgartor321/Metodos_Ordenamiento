@@ -415,6 +415,7 @@ public class Controlador implements Initializable {
                     menor.setYValue(valAct.getYValue());
                     valAct.setYValue(tmp);
                 });
+                Thread.sleep(tiempoRetardo);
 
                 Platform.runLater(()->{
                     menor.getNode().setStyle("");
