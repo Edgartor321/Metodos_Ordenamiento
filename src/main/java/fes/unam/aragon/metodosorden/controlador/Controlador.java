@@ -415,15 +415,30 @@ public class Controlador implements Initializable {
                     menor.setYValue(valAct.getYValue());
                     valAct.setYValue(tmp);
                 });
+
+                Platform.runLater(()->{
+                    menor.getNode().setStyle("");
+                });
             }
+            Platform.runLater(()->valAct.getNode().setStyle(""));
         }
 
         XYChart.Data<String,Number> aux= data.get(i+1);
+        Platform.runLater(() -> {
+            aux.getNode().setStyle("-fx-bar-fill: orange;");
+        });
+        Thread.sleep(tiempoRetardo);
 
         Platform.runLater(() -> {
             Number tmp = aux.getYValue();
             aux.setYValue(piv.getYValue());
             piv.setYValue(tmp);
+        });
+        Thread.sleep(tiempoRetardo);
+
+        Platform.runLater(() -> {
+            aux.getNode().setStyle("-fx-bar-fill: green;");
+            piv.getNode().setStyle("");
         });
         return i+1;
     }
