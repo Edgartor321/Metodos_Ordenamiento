@@ -339,15 +339,12 @@ public class Controlador implements Initializable {
                     int finalOut = out;
                     int finalMin = min;
                     Platform.runLater(()->{
-                        XYChart.Data<String, Number> salida =null;
-                        XYChart.Data<String, Number> minimo =null;
-
-                        salida=data.get(finalOut);
-                        minimo=data.get(finalMin);
+                        XYChart.Data<String, Number> salida =data.get(finalOut);
+                        XYChart.Data<String, Number> minimo =data.get(finalMin);
 
                         Number tmp=salida.getYValue();
-                        primero.setYValue(segundo.getYValue());
-                        segundo.setYValue(tmp);
+                        salida.setYValue(minimo.getYValue());
+                        minimo.setYValue(tmp);
                     });
                     Platform.runLater(()->{
                         primero.getNode().setStyle("");
