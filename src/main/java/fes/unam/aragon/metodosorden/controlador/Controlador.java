@@ -103,6 +103,12 @@ public class Controlador implements Initializable {
                 ti.start();
                 break;
             case "Quicksort":
+                XYChart.Series<String, Number> series4=chGrafica.getData().get(0);
+                Task<Void> taskqs =quicksortTask(series4);
+
+                Thread tqs =new Thread(taskqs);
+                tqs.setDaemon(true);
+                tqs.start();
                 break;
             case "Seleccion":
                 XYChart.Series<String, Number> series3=chGrafica.getData().get(0);
@@ -357,5 +363,58 @@ public class Controlador implements Initializable {
                 return null;
             }
         };
+    }
+
+
+    private Task<Void> quicksortTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                quicksortRec(data,0, (data.size()-1));
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
+    }
+    private void quicksortRec(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin){
+        if(inicio < fin){
+            int indicePiv=particion(datos, inicio,fin);
+            quicksortRec(datos,inicio,indicePiv-1);
+            quicksortRec(datos, indicePiv+1, fin);
+        }
+    }
+
+    private int particion(ObservableList<XYChart.Data<String, Number>> data, int inicio, int fin){
+        XYChart.Data<String,Number> piv= data.get(fin);
+
+        int i=inicio-1;
+        for (int j = inicio; j < fin; j++) {
+            XYChart.Data<String,Number> valAct= data.get(j);
+            double actualValue=valAct.getYValue().doubleValue();
+            double pivValue=piv.getYValue().doubleValue();
+            if(actualValue<=pivValue){
+                i++;
+                XYChart.Data<String,Number> menor= data.get(i);
+                Platform.runLater(() -> {
+                    Number tmp = menor.getYValue();
+                    menor.setYValue(valAct.getYValue());
+                    valAct.setYValue(tmp);
+                });
+
+            }
+        }
+
+        XYChart.Data<String,Number> aux= data.get(i+1);
+
+        Platform.runLater(() -> {
+            Number tmp = aux.getYValue();
+            aux.setYValue(piv.getYValue());
+            piv.setYValue(tmp);
+        });
+        return i+1;
     }
 }
