@@ -41,7 +41,7 @@ public class Controlador implements Initializable {
     private BarChart<String, Number> chGrafica;
 
     //Esto sirve para el selector en el menu, más adelante.
-    private String[] opciones={"Burbuja","Sacudida","Seleccion","Insercion","Quicksort"};
+    private String[] opciones={"Burbuja","Sacudida","Seleccion","Insercion","Quicksort", "Mezcla"};
 
     //Todo lo que este dentro de aquí se va a inicializar por defecto (el desplegable y los primeros datos aleatorios, para evitar errores)
     @Override
@@ -121,6 +121,9 @@ public class Controlador implements Initializable {
                 tse.setDaemon(true);
                 tse.start();
                 break;
+            case "Mezcla":
+                break;
+
             default:
                 mostrarError("Debes seleccionar un metodo de ordnamiento");
         }
@@ -473,4 +476,6 @@ public class Controlador implements Initializable {
         });
         return i+1;
     }
+
+
 }
