@@ -503,83 +503,93 @@ public class Controlador implements Initializable {
         if(inicio >= fin){
             return;   //evitamos un ciclado
         }
-            int mit=(fin-inicio)/2;
-            mergeSortRec(datos,inicio,mit);
-            mergeSortRec(datos, mit+1, fin);
-            burbujaM(datos,inicio,mit);
-            burbujaM(datos,mit+1,fin);
-
-            merge(datos,inicio,fin,mit);
+            int mitad=(inicio + fin)/2;
+            mergeSortRec(datos,inicio,mitad);
+            mergeSortRec(datos, mitad+1, fin);
+            burbujaM(datos, inicio, fin);
+            merge(datos,inicio,mitad,fin);
 
     }
 
-    private void merge(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin, int mitad) throws InterruptedException{
-        List <Number> tmp= new ArrayList<>();
-        int tamizq=mitad-inicio+1;
-        int tamder= inicio-mitad;
-        int i= inicio;
-        int j= mitad+1;
-        while (i<mitad&&j<fin) {
+    private void merge(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int mitad, int fin) throws InterruptedException {
+        List<Number> tmp = new ArrayList<>();
 
-            XYChart.Data<String, Number> a = datos.get(i);
-            XYChart.Data<String, Number> b = datos.get(j);
-            Platform.runLater(()->{
-                b.getNode().setStyle("-fx-bar-fill: blue;");
-                a.getNode().setStyle("-fx-bar-fill: pink;");
-            });
-            Thread.sleep(tiempoRetardo);
+        int i = inicio;
+        int j = mitad + 1;
 
-            double p =a.getYValue().doubleValue();
-            double s=a.getYValue().doubleValue();
+        while (i <= mitad && j <= fin) {
+            double a = datos.get(i).getYValue().doubleValue();
+            double b = datos.get(j).getYValue().doubleValue();
 
-            if (p<=s){
-                tmp.add(p);
+            if (a <= b) {
+                tmp.add(a);
                 i++;
-
-            }else {
-                tmp.add(s);
-            }
-
-            while (i<=mitad){
-                tmp.add(datos.get(i).getYValue());
-                i++;
-            }
-            while(j<=fin){
-                tmp.add(datos.get(j).getYValue());
+            } else {
+                tmp.add(b);
                 j++;
             }
         }
 
+            while (i <= mitad) {
+                tmp.add(datos.get(i).getYValue());
+                i++;
+            }
+            while (j <= fin) {
+                tmp.add(datos.get(j).getYValue());
+                j++;
+            }
+            for (int k = 0; k < tmp.size(); k++) {
+                Number valor = tmp.get(k);
 
-    }
+                XYChart.Data<String, Number> d = datos.get(inicio + k);
+                d.setYValue(valor);
 
-    private void burbujaM(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin) throws InterruptedException{
-        for (int i = datos.size()-1 ; i >0 ; i--) {
-            for (int j = 0; j < i; j++) {
-                primero= datos.get(j);
-                segundo= datos.get(j+1);
+                int finalK = inicio + k;
+                Platform.runLater(() ->
+                        datos.get(finalK).getNode().setStyle("-fx-bar-fill: blue;")
+                );
 
-                Platform.runLater(()->{
-                    primero.getNode().setStyle("-fx-bar-fill: red;");
-                    segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                Thread.sleep(tiempoRetardo);
+            }
+
+        }
+    private void burbujaM(ObservableList<XYChart.Data<String, Number>> datos,
+                          int inicio, int fin) throws InterruptedException {
+
+        for (int i = fin; i > inicio; i--) {
+            for (int j = inicio; j < i; j++) {
+
+                XYChart.Data<String, Number> a = datos.get(j);
+                XYChart.Data<String, Number> b = datos.get(j + 1);
+
+                Platform.runLater(() -> {
+                    a.getNode().setStyle("-fx-bar-fill: red;");
+                    b.getNode().setStyle("-fx-bar-fill: orange;");
                 });
                 Thread.sleep(tiempoRetardo);
 
-                double va=primero.getYValue().doubleValue();
-                double vb=segundo.getYValue().doubleValue();
-                if (va>vb){
-                    Platform.runLater(()->{
-                        Number tmp=primero.getYValue();
-                        primero.setYValue(segundo.getYValue());
-                        segundo.setYValue(tmp);
+                double va = a.getYValue().doubleValue();
+                double vb = b.getYValue().doubleValue();
+
+                if (va > vb) {
+                    Number tmp = va;
+
+                    Platform.runLater(() -> {
+                        a.setYValue(vb);
+                        b.setYValue(tmp);
                     });
                 }
-                Platform.runLater(()->{
-                    primero.getNode().setStyle("");
-                    segundo.getNode().setStyle("");
+
+                Platform.runLater(() -> {
+                    a.getNode().setStyle("");
+                    b.getNode().setStyle("");
                 });
-                Thread.sleep((tiempoRetardo));
+
+                Thread.sleep(tiempoRetardo);
             }
         }
     }
+
+
 }
+
