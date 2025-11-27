@@ -12,10 +12,10 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import unam.fes.aragon.dinamicas.listasimple.ListaSimple;
-import unam.fes.aragon.orden.Burbuja;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -122,6 +122,12 @@ public class Controlador implements Initializable {
                 tse.start();
                 break;
             case "Mezcla":
+                XYChart.Series<String, Number> series5=chGrafica.getData().get(0);
+                Task<Void> taskMS =MergeSortTask(series5);
+
+                Thread tms =new Thread(taskMS);
+                tms.setDaemon(true);
+                tms.start();
                 break;
 
             default:
@@ -477,5 +483,103 @@ public class Controlador implements Initializable {
         return i+1;
     }
 
+    private Task<Void> MergeSortTask(XYChart.Series<String, Number>series){
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                ObservableList<XYChart.Data<String, Number>> data = series.getData();
+                mergeSortRec(data, 0, data.size()-1);
 
+                Platform.runLater(()->{
+                    btnLista.setDisable(false);
+                    btnOrdenar.setDisable(false);
+                });
+                return null;
+            }
+        };
+    }
+
+    private void mergeSortRec(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin) throws InterruptedException {
+        if(inicio >= fin){
+            return;   //evitamos un ciclado
+        }
+            int mit=(fin-inicio)/2;
+            mergeSortRec(datos,inicio,mit);
+            mergeSortRec(datos, mit+1, fin);
+            burbujaM(datos,inicio,mit);
+            burbujaM(datos,mit+1,fin);
+
+            merge(datos,inicio,fin,mit);
+
+    }
+
+    private void merge(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin, int mitad) throws InterruptedException{
+        List <Number> tmp= new ArrayList<>();
+        int tamizq=mitad-inicio+1;
+        int tamder= inicio-mitad;
+        int i= inicio;
+        int j= mitad+1;
+        while (i<mitad&&j<fin) {
+
+            XYChart.Data<String, Number> a = datos.get(i);
+            XYChart.Data<String, Number> b = datos.get(j);
+            Platform.runLater(()->{
+                b.getNode().setStyle("-fx-bar-fill: blue;");
+                a.getNode().setStyle("-fx-bar-fill: pink;");
+            });
+            Thread.sleep(tiempoRetardo);
+
+            double p =a.getYValue().doubleValue();
+            double s=a.getYValue().doubleValue();
+
+            if (p<=s){
+                tmp.add(p);
+                i++;
+
+            }else {
+                tmp.add(s);
+            }
+
+            while (i<=mitad){
+                tmp.add(datos.get(i).getYValue());
+                i++;
+            }
+            while(j<=fin){
+                tmp.add(datos.get(j).getYValue());
+                j++;
+            }
+        }
+
+
+    }
+
+    private void burbujaM(ObservableList<XYChart.Data<String, Number>> datos, int inicio, int fin) throws InterruptedException{
+        for (int i = datos.size()-1 ; i >0 ; i--) {
+            for (int j = 0; j < i; j++) {
+                primero= datos.get(j);
+                segundo= datos.get(j+1);
+
+                Platform.runLater(()->{
+                    primero.getNode().setStyle("-fx-bar-fill: red;");
+                    segundo.getNode().setStyle("-fx-bar-fill: orange;");
+                });
+                Thread.sleep(tiempoRetardo);
+
+                double va=primero.getYValue().doubleValue();
+                double vb=segundo.getYValue().doubleValue();
+                if (va>vb){
+                    Platform.runLater(()->{
+                        Number tmp=primero.getYValue();
+                        primero.setYValue(segundo.getYValue());
+                        segundo.setYValue(tmp);
+                    });
+                }
+                Platform.runLater(()->{
+                    primero.getNode().setStyle("");
+                    segundo.getNode().setStyle("");
+                });
+                Thread.sleep((tiempoRetardo));
+            }
+        }
+    }
 }
