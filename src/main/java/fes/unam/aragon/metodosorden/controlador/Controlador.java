@@ -521,6 +521,11 @@ public class Controlador implements Initializable {
             double a = datos.get(i).getYValue().doubleValue();
             double b = datos.get(j).getYValue().doubleValue();
 
+            primero=datos.get(i);
+            segundo=datos.get(j);
+
+
+
             if (a <= b) {
                 tmp.add(a);
                 i++;
@@ -529,6 +534,11 @@ public class Controlador implements Initializable {
                 j++;
             }
         }
+
+        Platform.runLater(()->{
+            primero.getNode().setStyle("");
+            segundo.getNode().setStyle("");
+        });
 
             while (i <= mitad) {
                 tmp.add(datos.get(i).getYValue());
@@ -572,17 +582,17 @@ public class Controlador implements Initializable {
                 double vb = b.getYValue().doubleValue();
 
                 if (va > vb) {
-                    Number tmp = va;
+                    Number tmp = a.getYValue();
 
                     Platform.runLater(() -> {
-                        a.setYValue(vb);
+                        a.setYValue(b.getYValue());
                         b.setYValue(tmp);
                     });
                 }
 
                 Platform.runLater(() -> {
-                    a.getNode().setStyle("");
-                    b.getNode().setStyle("");
+                    a.getNode().setStyle("-fx-bar-fill: purple;");
+                    b.getNode().setStyle("-fx-bar-fill: gray;");
                 });
 
                 Thread.sleep(tiempoRetardo);
