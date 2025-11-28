@@ -591,8 +591,8 @@ public class Controlador implements Initializable {
                 }
 
                 Platform.runLater(() -> {
-                    a.getNode().setStyle("-fx-bar-fill: blue;");
-                    b.getNode().setStyle("-fx-bar-fill: purple;");
+                    a.getNode().setStyle("");
+                    b.getNode().setStyle("");
                 });
 
                 Thread.sleep(tiempoRetardo);
