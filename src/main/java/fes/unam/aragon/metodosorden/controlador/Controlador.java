@@ -524,6 +524,12 @@ public class Controlador implements Initializable {
             primero=datos.get(i);
             segundo=datos.get(j);
 
+            Platform.runLater(()->{
+                primero.getNode().setStyle("-fx-bar-fill: blue;");
+                segundo.getNode().setStyle("-fx-bar-fill: #03fcf8;");
+
+            });
+            Thread.sleep(tiempoRetardo);
 
             if (a <= b) {
                 tmp.add(a);
