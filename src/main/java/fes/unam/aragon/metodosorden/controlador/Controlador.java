@@ -525,7 +525,6 @@ public class Controlador implements Initializable {
             segundo=datos.get(j);
 
 
-
             if (a <= b) {
                 tmp.add(a);
                 i++;
