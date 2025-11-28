@@ -556,7 +556,7 @@ public class Controlador implements Initializable {
 
                 int finalK = inicio + k;
                 Platform.runLater(() ->
-                        datos.get(finalK).getNode().setStyle("-fx-bar-fill: blue;")
+                        datos.get(finalK).getNode().setStyle("-fx-bar-fill: green;")
                 );
 
                 Thread.sleep(tiempoRetardo);
@@ -566,8 +566,8 @@ public class Controlador implements Initializable {
     private void burbujaM(ObservableList<XYChart.Data<String, Number>> datos,
                           int inicio, int fin) throws InterruptedException {
 
-        for (int i = fin; i > inicio; i--) {
-            for (int j = inicio; j < i; j++) {
+        for (int i = inicio; i > fin; i++) {
+            for (int j = inicio; j < fin-(i-inicio); j++) {
 
                 XYChart.Data<String, Number> a = datos.get(j);
                 XYChart.Data<String, Number> b = datos.get(j + 1);
@@ -582,17 +582,17 @@ public class Controlador implements Initializable {
                 double vb = b.getYValue().doubleValue();
 
                 if (va > vb) {
-                    Number tmp = a.getYValue();
 
                     Platform.runLater(() -> {
+                        Number tmp = a.getYValue();
                         a.setYValue(b.getYValue());
                         b.setYValue(tmp);
                     });
                 }
 
                 Platform.runLater(() -> {
-                    a.getNode().setStyle("-fx-bar-fill: purple;");
-                    b.getNode().setStyle("-fx-bar-fill: gray;");
+                    a.getNode().setStyle("-fx-bar-fill: blue;");
+                    b.getNode().setStyle("-fx-bar-fill: purple;");
                 });
 
                 Thread.sleep(tiempoRetardo);
